@@ -52,15 +52,32 @@ function initReveal() {
   const targets = document.querySelectorAll(".reveal");
   if (!targets.length) return;
   if (prefersReducedMotion) { targets.forEach((t) => t.classList.add("in")); return; }
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("in");
-        io.unobserve(entry.target);
-      }
+
+  try {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("in");
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: "0px 0px -8% 0px" });
+    targets.forEach((t) => io.observe(t));
+  } catch (e) {
+    targets.forEach((t) => t.classList.add("in"));
+    return;
+  }
+
+  // Safety net: reveal anything already near the viewport almost immediately,
+  // and guarantee everything is visible shortly after, regardless of whether
+  // the scroll-watcher fires correctly in this browser/environment.
+  setTimeout(() => {
+    targets.forEach((t) => {
+      const rect = t.getBoundingClientRect();
+      if (rect.top < window.innerHeight + 400) t.classList.add("in");
     });
-  }, { threshold: 0.15 });
-  targets.forEach((t) => io.observe(t));
+  }, 350);
+  setTimeout(() => { targets.forEach((t) => t.classList.add("in")); }, 3000);
 }
 
 /* ---------- Count-up stats ---------- */
@@ -80,12 +97,17 @@ function initCounters() {
     }
     requestAnimationFrame(frame);
   };
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) { animate(entry.target); io.unobserve(entry.target); }
-    });
-  }, { threshold: 0.6 });
-  nums.forEach((n) => io.observe(n));
+  try {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) { animate(entry.target); io.unobserve(entry.target); }
+      });
+    }, { threshold: 0.6 });
+    nums.forEach((n) => io.observe(n));
+  } catch (e) {
+    // No IntersectionObserver support (or it misbehaved) — just show the final numbers.
+    nums.forEach((n) => { n.textContent = n.dataset.count; });
+  }
 }
 
 /* ---------- Nav toggle (mobile) ---------- */
