@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Voyager Enterprise — Bridge</title>
+<meta name="description" content="Strategic planning archive: December Summits, Liberation Day memorials, and the projects that follow." />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<canvas id="starfield"></canvas>
+
+<nav class="site-nav">
+  <div class="brand">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 2 3 20h18L12 2Z" stroke="#0B3D91" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 9v7" stroke="#E8A33D" stroke-width="1.6" stroke-linecap="round"/></svg>
+    <div><span>Voyager Enterprise</span><span class="sub">STRATEGIC ARCHIVE</span></div>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle navigation">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="#16202B" stroke-width="1.8" stroke-linecap="round"/></svg>
+  </button>
+  <div class="nav-links">
+    <a href="index.html" class="current">Bridge</a>
+    <a href="archive.html">Archive</a>
+    <a href="achievements.html">Hall of Honor</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="warp-streaks"></div>
+  <div class="insignia">
+    <svg width="54" height="54" viewBox="0 0 24 24" fill="none"><path d="M12 2 3 20h18L12 2Z" stroke="#0B3D91" stroke-width="1.4" stroke-linejoin="round"/><path d="M12 9v7" stroke="#E8A33D" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="6.4" r="1.1" fill="#1FA9BE"/></svg>
+  </div>
+  <p class="tagline">Status report from the bridge</p>
+  <h1>Two people, run like a nation-state.</h1>
+  <p class="lede">Every Summit, every Liberation Day, every project that followed — logged, archived, and carried forward at warp.</p>
+</header>
+
+<main>
+  <section class="section" id="active-projects">
+    <div class="container">
+      <div class="section-head reveal">
+        <div>
+          <p class="panel-eyebrow">Current cycle</p>
+          <h2>Active projects</h2>
+        </div>
+      </div>
+      <div class="grid grid--3" id="active-projects-grid"></div>
+    </div>
+  </section>
+
+  <section class="section" id="current-directive">
+    <div class="container">
+      <div class="panel reveal" id="summit-panel"></div>
+    </div>
+  </section>
+
+  <section class="section" id="liberation">
+    <div class="container">
+      <div class="panel panel--amber reveal" id="liberation-panel"></div>
+    </div>
+  </section>
+
+  <section class="section" id="stats">
+    <div class="container">
+      <div class="stats reveal" id="stats-strip"></div>
+    </div>
+  </section>
+
+  <section class="section" id="nav-teasers">
+    <div class="container">
+      <div class="grid grid--2">
+        <a class="teaser trace reveal" href="archive.html">
+          <h3>The Archive</h3>
+          <p>Every December Summit and Liberation Day, in one mission log.</p>
+          <span class="arrow">Open the timeline →</span>
+        </a>
+        <a class="teaser trace reveal" href="achievements.html">
+          <h3>Hall of Honor</h3>
+          <p>The trophies awarded each year for the projects that stood out.</p>
+          <span class="arrow">Enter the hall →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <p>Voyager Enterprise — a living record, updated at every Summit.</p>
+</footer>
+
+<script src="js/data.js"></script>
+<script>
+function pageInit() {
+  // Active projects
+  const grid = document.getElementById("active-projects-grid");
+  grid.innerHTML = getActiveProjects().map(projectCardHtml).join("");
+
+  // Current governing summit (flagship panel)
+  const summit = getCurrentSummit();
+  document.getElementById("summit-panel").innerHTML = `
+    <p class="panel-eyebrow">Currently governing directive</p>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;">
+      <h2 style="margin-bottom:8px;">${summit.title}</h2>
+      ${badgeHtml(summit.status)}
+    </div>
+    <p style="color:var(--ink-faint);font-family:var(--font-display);font-weight:600;margin-bottom:14px;">${summit.display}</p>
+    <p>${summit.summary}</p>
+    <div class="t-details" style="margin-top:20px;">
+      ${videoHtml(summit.youtubeId, summit.title)}
+      <div>
+        <p style="margin-bottom:14px;">${docChipHtml(summit.docUrl) || '<span style="color:var(--ink-faint);font-size:0.85rem;">Document link pending.</span>'}</p>
+        <h3 style="font-size:1rem;margin-bottom:10px;">Projects from this directive</h3>
+        <div class="grid" style="gap:10px;">
+          ${getProjectsFor(summit.id).map(p => `<div class="card" style="padding:14px 18px;flex-direction:row;align-items:center;justify-content:space-between;"><span>${p.name}</span>${badgeHtml(p.status)}</div>`).join("") || '<p style="font-size:0.9rem;">No projects logged yet.</p>'}
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Latest Liberation Day
+  const lib = getLatestLiberation();
+  document.getElementById("liberation-panel").innerHTML = `
+    <p class="panel-eyebrow" style="color:var(--alert);">Latest Liberation Day</p>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;">
+      <h2 style="margin-bottom:8px;">${lib.title}</h2>
+      ${badgeHtml(lib.status, true)}
+    </div>
+    <p style="color:var(--ink-faint);font-family:var(--font-display);font-weight:600;margin-bottom:14px;">${lib.display}</p>
+    <p>${lib.summary}</p>
+    <div class="t-details" style="margin-top:20px;">
+      ${videoHtml(lib.youtubeId, lib.title)}
+      <div>
+        <p style="margin-bottom:14px;">${docChipHtml(lib.docUrl) || '<span style="color:var(--ink-faint);font-size:0.85rem;">Document link pending.</span>'}</p>
+        <h3 style="font-size:1rem;margin-bottom:10px;">Multi-year initiative</h3>
+        <div class="grid" style="gap:10px;">
+          ${getProjectsFor(lib.id).map(p => `<div class="card" style="padding:14px 18px;flex-direction:row;align-items:center;justify-content:space-between;"><span>${p.name}</span>${badgeHtml(p.status)}</div>`).join("")}
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Stats strip
+  const totalDirectives = DIRECTIVES.length;
+  const initiated = PROJECTS.length;
+  const completed = PROJECTS.filter(p => p.status === "Completed").length;
+  const years = new Set(DIRECTIVES.map(d => d.date.slice(0,4))).size;
+  document.getElementById("stats-strip").innerHTML = `
+    <div class="stat"><div class="num" data-count="${totalDirectives}">0</div><div class="label">Directives held</div></div>
+    <div class="stat"><div class="num" data-count="${initiated}">0</div><div class="label">Projects initiated</div></div>
+    <div class="stat"><div class="num" data-count="${completed}">0</div><div class="label">Projects completed</div></div>
+    <div class="stat"><div class="num" data-count="${years}">0</div><div class="label">Years running</div></div>
+  `;
+  initCounters();
+}
+</script>
+<script src="js/main.js"></script>
+</body>
+</html>

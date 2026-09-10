@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Voyager Enterprise — Archive</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<canvas id="starfield"></canvas>
+
+<nav class="site-nav">
+  <div class="brand">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 2 3 20h18L12 2Z" stroke="#0B3D91" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 9v7" stroke="#E8A33D" stroke-width="1.6" stroke-linecap="round"/></svg>
+    <div><span>Voyager Enterprise</span><span class="sub">STRATEGIC ARCHIVE</span></div>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle navigation">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="#16202B" stroke-width="1.8" stroke-linecap="round"/></svg>
+  </button>
+  <div class="nav-links">
+    <a href="index.html">Bridge</a>
+    <a href="archive.html" class="current">Archive</a>
+    <a href="achievements.html">Hall of Honor</a>
+  </div>
+</nav>
+
+<main>
+  <section class="section" style="padding-top:70px;">
+    <div class="container">
+      <p class="panel-eyebrow reveal">Mission log</p>
+      <h1 class="reveal" style="font-size:clamp(2rem,4vw,2.8rem);">Archive</h1>
+      <p class="reveal" style="max-width:60ch;margin-bottom:36px;">Every December Summit and Liberation Day Memorial, in order, with the projects each one commissioned.</p>
+
+      <div class="filter-bar reveal">
+        <button class="filter-chip active" data-filter="all">All</button>
+        <button class="filter-chip" data-filter="December Summit">December Summit</button>
+        <button class="filter-chip" data-filter="Liberation Day Memorial">Liberation Day</button>
+      </div>
+
+      <div class="timeline" id="timeline"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <p>Voyager Enterprise — a living record, updated at every Summit.</p>
+</footer>
+
+<script src="js/data.js"></script>
+<script>
+let currentFilter = "all";
+
+function renderTimeline() {
+  const host = document.getElementById("timeline");
+  const entries = [...DIRECTIVES]
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .filter(d => currentFilter === "all" || d.type === currentFilter);
+
+  host.innerHTML = entries.map(d => {
+    const projects = getProjectsFor(d.id);
+    const isMemorial = d.type === "Liberation Day Memorial";
+    return `
+      <div class="t-entry reveal ${isMemorial ? "is-memorial" : ""}">
+        <div class="t-date">${d.display} · ${d.type}</div>
+        <div class="panel ${isMemorial ? "panel--amber" : "panel--cyan"}" style="margin-top:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;">
+            <h3 style="margin-bottom:4px;">${d.title}</h3>
+            ${badgeHtml(d.status, isMemorial)}
+          </div>
+          <p>${d.summary}</p>
+          <div class="t-details">
+            ${videoHtml(d.youtubeId, d.title)}
+            <div>
+              <p style="margin-bottom:12px;">${docChipHtml(d.docUrl) || '<span style="color:var(--ink-faint);font-size:0.85rem;">Document link pending.</span>'}</p>
+              <h3 style="font-size:0.95rem;margin-bottom:8px;">Projects from this era</h3>
+              ${projects.length
+                ? `<div class="grid" style="gap:8px;">${projects.map(p => `<div class="card" style="padding:12px 16px;flex-direction:row;align-items:center;justify-content:space-between;"><span>${p.name}</span>${badgeHtml(p.status)}</div>`).join("")}</div>`
+                : '<p style="font-size:0.88rem;">No projects logged yet.</p>'}
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }).join("");
+
+  initReveal();
+  mountVideoEmbeds();
+}
+
+function pageInit() {
+  renderTimeline();
+  document.querySelectorAll(".filter-chip").forEach(chip => {
+    chip.addEventListener("click", () => {
+      document.querySelectorAll(".filter-chip").forEach(c => c.classList.remove("active"));
+      chip.classList.add("active");
+      currentFilter = chip.dataset.filter;
+      renderTimeline();
+    });
+  });
+}
+</script>
+<script src="js/main.js"></script>
+</body>
+</html>

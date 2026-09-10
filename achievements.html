@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Voyager Enterprise — Hall of Honor</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<canvas id="starfield"></canvas>
+
+<nav class="site-nav">
+  <div class="brand">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 2 3 20h18L12 2Z" stroke="#0B3D91" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 9v7" stroke="#E8A33D" stroke-width="1.6" stroke-linecap="round"/></svg>
+    <div><span>Voyager Enterprise</span><span class="sub">STRATEGIC ARCHIVE</span></div>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle navigation">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="#16202B" stroke-width="1.8" stroke-linecap="round"/></svg>
+  </button>
+  <div class="nav-links">
+    <a href="index.html">Bridge</a>
+    <a href="archive.html">Archive</a>
+    <a href="achievements.html" class="current">Hall of Honor</a>
+  </div>
+</nav>
+
+<main>
+  <div class="hall-header">
+    <p class="panel-eyebrow reveal">Decided jointly, every Summit</p>
+    <h1 class="reveal" style="font-size:clamp(2rem,4vw,2.8rem);">Hall of Honor</h1>
+    <p class="reveal" style="max-width:56ch;margin:0 auto;">The trophies awarded each year, looking back at the era that just closed.</p>
+  </div>
+
+  <section class="section" style="padding-top:10px;">
+    <div class="container" id="eras"></div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <p>Voyager Enterprise — a living record, updated at every Summit.</p>
+</footer>
+
+<script src="js/data.js"></script>
+<script>
+function medalSvg() {
+  return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="6" stroke="#fff" stroke-width="1.5"/><path d="M9 14 7 21l5-2 5 2-2-7" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg>`;
+}
+
+function pageInit() {
+  const eraNames = [...new Set(ACHIEVEMENTS.map(a => a.era))];
+  const host = document.getElementById("eras");
+
+  host.innerHTML = eraNames.map(era => {
+    const items = ACHIEVEMENTS.filter(a => a.era === era);
+    return `
+      <div class="era-group reveal">
+        <div class="era-title">
+          <h2 style="margin:0;font-size:1.3rem;">${era}</h2>
+          <div class="line"></div>
+        </div>
+        <div class="grid grid--3">
+          ${items.map(a => {
+            const project = PROJECTS.find(p => p.id === a.projectId);
+            const directive = getDirective(a.directiveId);
+            return `
+              <div class="trophy-card trace">
+                <div class="medal">${medalSvg()}</div>
+                <div class="category">${a.category}</div>
+                <div class="winner">${project ? project.name : "—"}</div>
+                <p class="citation">${a.citation}</p>
+                <a href="archive.html" style="font-size:0.82rem;">View directive →</a>
+                <div class="attribution">Decided by the founders at ${a.decidedAt}</div>
+              </div>`;
+          }).join("")}
+        </div>
+      </div>`;
+  }).join("");
+
+  initReveal();
+}
+</script>
+<script src="js/main.js"></script>
+</body>
+</html>
