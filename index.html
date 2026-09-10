@@ -92,68 +92,78 @@
 <script>
 function pageInit() {
   // Active projects
-  const grid = document.getElementById("active-projects-grid");
-  grid.innerHTML = getActiveProjects().map(labTileHtml).join("");
-  mountLabTiles(grid);
+  try {
+    const grid = document.getElementById("active-projects-grid");
+    grid.innerHTML = getActiveProjects().map(labTileHtml).join("");
+    mountLabTiles(grid);
+  } catch (e) { console.error("active projects render failed", e); }
 
   // Current governing summit (flagship panel)
-  const summit = getCurrentSummit();
-  document.getElementById("summit-panel").innerHTML = `
-    <p class="panel-eyebrow">Currently governing directive</p>
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;">
-      <h2 style="margin-bottom:8px;">${summit.title}</h2>
-      ${badgeHtml(summit.status)}
-    </div>
-    <p style="color:var(--ink-faint);font-family:var(--font-display);font-weight:600;margin-bottom:14px;">${summit.display}</p>
-    <p>${summit.summary}</p>
-    <div class="t-details" style="margin-top:20px;">
-      ${videoHtml(summit.youtubeId, summit.title)}
-      <div>
-        <p style="margin-bottom:14px;">${docChipHtml(summit.docUrl) || '<span style="color:var(--ink-faint);font-size:0.85rem;">Document link pending.</span>'}</p>
-        <h3 style="font-size:1rem;margin-bottom:10px;">Projects from this directive</h3>
-        <div class="grid" style="gap:10px;">
-          ${getProjectsFor(summit.id).map(p => `<div class="card" style="padding:14px 18px;flex-direction:row;align-items:center;justify-content:space-between;"><span>${p.name}</span>${badgeHtml(p.status)}</div>`).join("") || '<p style="font-size:0.9rem;">No projects logged yet.</p>'}
+  try {
+    const summit = getCurrentSummit();
+    document.getElementById("summit-panel").innerHTML = `
+      <p class="panel-eyebrow">Currently governing directive</p>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;">
+        <h2 style="margin-bottom:8px;">${summit.title}</h2>
+        ${badgeHtml(summit.status)}
+      </div>
+      <p style="color:var(--ink-faint);font-family:var(--font-display);font-weight:600;margin-bottom:14px;">${summit.display}</p>
+      <p>${summit.summary}</p>
+      <div class="t-details" style="margin-top:20px;">
+        ${videoHtml(summit.youtubeId, summit.title)}
+        <div>
+          <p style="margin-bottom:14px;">${docChipHtml(summit.docUrl) || '<span style="color:var(--ink-faint);font-size:0.85rem;">Document link pending.</span>'}</p>
+          <h3 style="font-size:1rem;margin-bottom:10px;">Projects from this directive</h3>
+          <div class="grid" style="gap:10px;">
+            ${getProjectsFor(summit.id).map(p => `<div class="card" style="padding:14px 18px;flex-direction:row;align-items:center;justify-content:space-between;"><span>${p.name}</span>${badgeHtml(p.status)}</div>`).join("") || '<p style="font-size:0.9rem;">No projects logged yet.</p>'}
+          </div>
         </div>
       </div>
-    </div>
-  `;
+    `;
+  } catch (e) { console.error("summit panel render failed", e); }
 
   // Latest Liberation Day
-  const lib = getLatestLiberation();
-  document.getElementById("liberation-panel").innerHTML = `
-    <p class="panel-eyebrow" style="color:var(--alert);">Latest Liberation Day</p>
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;">
-      <h2 style="margin-bottom:8px;">${lib.title}</h2>
-      ${badgeHtml(lib.status, true)}
-    </div>
-    <p style="color:var(--ink-faint);font-family:var(--font-display);font-weight:600;margin-bottom:14px;">${lib.display}</p>
-    <p>${lib.summary}</p>
-    <div class="t-details" style="margin-top:20px;">
-      ${videoHtml(lib.youtubeId, lib.title)}
-      <div>
-        <p style="margin-bottom:14px;">${docChipHtml(lib.docUrl) || '<span style="color:var(--ink-faint);font-size:0.85rem;">Document link pending.</span>'}</p>
-        <h3 style="font-size:1rem;margin-bottom:10px;">Multi-year initiative</h3>
-        <div class="grid" style="gap:10px;">
-          ${getProjectsFor(lib.id).map(p => `<div class="card" style="padding:14px 18px;flex-direction:row;align-items:center;justify-content:space-between;"><span>${p.name}</span>${badgeHtml(p.status)}</div>`).join("")}
+  try {
+    const lib = getLatestLiberation();
+    document.getElementById("liberation-panel").innerHTML = `
+      <p class="panel-eyebrow" style="color:var(--alert);">Latest Liberation Day</p>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;">
+        <h2 style="margin-bottom:8px;">${lib.title}</h2>
+        ${badgeHtml(lib.status, true)}
+      </div>
+      <p style="color:var(--ink-faint);font-family:var(--font-display);font-weight:600;margin-bottom:14px;">${lib.display}</p>
+      <p>${lib.summary}</p>
+      <div class="t-details" style="margin-top:20px;">
+        ${videoHtml(lib.youtubeId, lib.title)}
+        <div>
+          <p style="margin-bottom:14px;">${docChipHtml(lib.docUrl) || '<span style="color:var(--ink-faint);font-size:0.85rem;">Document link pending.</span>'}</p>
+          <h3 style="font-size:1rem;margin-bottom:10px;">Multi-year initiative</h3>
+          <div class="grid" style="gap:10px;">
+            ${getProjectsFor(lib.id).map(p => `<div class="card" style="padding:14px 18px;flex-direction:row;align-items:center;justify-content:space-between;"><span>${p.name}</span>${badgeHtml(p.status)}</div>`).join("")}
+          </div>
         </div>
       </div>
-    </div>
-  `;
+    `;
+  } catch (e) { console.error("liberation panel render failed", e); }
 
   // Stats strip
-  const totalDirectives = DIRECTIVES.length;
-  const initiated = PROJECTS.length;
-  const completed = PROJECTS.filter(p => p.status === "Completed").length;
-  const years = new Set(DIRECTIVES.map(d => d.date.slice(0,4))).size;
-  document.getElementById("stats-strip").innerHTML = `
-    <div class="stat"><div class="num" data-count="${totalDirectives}">0</div><div class="label">Directives held</div></div>
-    <div class="stat"><div class="num" data-count="${initiated}">0</div><div class="label">Projects initiated</div></div>
-    <div class="stat"><div class="num" data-count="${completed}">0</div><div class="label">Projects completed</div></div>
-    <div class="stat"><div class="num" data-count="${years}">0</div><div class="label">Years running</div></div>
-  `;
-  initCounters();
-  initReveal();
-  mountVideoEmbeds();
+  try {
+    const totalDirectives = DIRECTIVES.length;
+    const initiated = PROJECTS.length;
+    const completed = PROJECTS.filter(p => p.status === "Completed").length;
+    const years = new Set(DIRECTIVES.map(d => d.date.slice(0,4))).size;
+    document.getElementById("stats-strip").innerHTML = `
+      <div class="stat"><div class="num" data-count="${totalDirectives}">0</div><div class="label">Directives held</div></div>
+      <div class="stat"><div class="num" data-count="${initiated}">0</div><div class="label">Projects initiated</div></div>
+      <div class="stat"><div class="num" data-count="${completed}">0</div><div class="label">Projects completed</div></div>
+      <div class="stat"><div class="num" data-count="${years}">0</div><div class="label">Years running</div></div>
+    `;
+  } catch (e) { console.error("stats render failed", e); }
+
+  // These must ALWAYS run, no matter what failed above.
+  try { initReveal(); } catch (e) { console.error("reveal (post-render) failed", e); }
+  try { mountVideoEmbeds(); } catch (e) { console.error("video embeds (post-render) failed", e); }
+  try { initCounters(); } catch (e) { console.error("counters (post-render) failed", e); }
 }
 </script>
 <script src="js/main.js"></script>
