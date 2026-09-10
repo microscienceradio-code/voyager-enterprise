@@ -2,7 +2,12 @@
    VOYAGER ENTERPRISE — SHARED BEHAVIOR
    ========================================================= */
 
-const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let prefersReducedMotion = false;
+try {
+  prefersReducedMotion = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+} catch (e) {
+  prefersReducedMotion = false;
+}
 
 /* ---------- Ambient starfield ---------- */
 function initStarfield() {
@@ -157,12 +162,51 @@ function projectCardHtml(p) {
   </article>`;
 }
 
+/* Interactive "lab dashboard" tile: short description up front,
+   click/tap/Enter reveals the mission-brief button. */
+function labTileHtml(p) {
+  const hasDoc = p.docUrl && p.docUrl !== "#";
+  return `<article class="lab-tile reveal" tabindex="0" role="button" aria-expanded="false" data-project="${p.id}">
+    <div class="tile-head">
+      <span class="tag">${p.category}</span>
+      ${badgeHtml(p.status)}
+    </div>
+    <h3>${p.name}</h3>
+    <p class="tile-desc">${p.description}</p>
+    <div class="tile-hint">
+      Mission brief
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="tile-reveal">
+      <div class="scan-line"></div>
+      ${hasDoc
+        ? `<a class="btn btn--primary" href="${p.docUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open mission brief →</a>`
+        : `<span style="font-size:0.85rem;color:var(--ink-faint);">Document link pending.</span>`}
+    </div>
+  </article>`;
+}
+
+function mountLabTiles(root = document) {
+  root.querySelectorAll(".lab-tile").forEach((tile) => {
+    const toggle = () => {
+      const open = tile.classList.toggle("is-open");
+      tile.setAttribute("aria-expanded", open ? "true" : "false");
+    };
+    tile.addEventListener("click", toggle);
+    tile.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+    });
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-  initStarfield();
-  initReveal();
-  initCounters();
-  initNav();
-  initWarpStreaks();
-  mountVideoEmbeds();
-  if (typeof pageInit === "function") pageInit();
+  try { initStarfield(); } catch (e) { console.error("starfield failed", e); }
+  try { initReveal(); } catch (e) { console.error("reveal failed", e); }
+  try { initCounters(); } catch (e) { console.error("counters failed", e); }
+  try { initNav(); } catch (e) { console.error("nav failed", e); }
+  try { initWarpStreaks(); } catch (e) { console.error("warp streaks failed", e); }
+  try { mountVideoEmbeds(); } catch (e) { console.error("video embeds failed", e); }
+  if (typeof pageInit === "function") {
+    try { pageInit(); } catch (e) { console.error("pageInit failed", e); }
+  }
 });
