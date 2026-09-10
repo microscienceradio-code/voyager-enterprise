@@ -360,6 +360,80 @@ a { color: var(--deep-blue); text-decoration: none; }
   letter-spacing: 0.03em;
 }
 
+/* ---------- Lab tiles (interactive project dashboard) ---------- */
+.lab-tile {
+  position: relative;
+  background: var(--glass);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--line);
+  border-radius: 24px 6px 24px 6px;
+  padding: 22px;
+  cursor: pointer;
+  transition: transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out), border-color 0.25s var(--ease-out);
+}
+.lab-tile:hover, .lab-tile:focus-visible { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(11,61,145,0.14); border-color: var(--line-strong); }
+.lab-tile:focus-visible { outline: 2px solid var(--impulse-cyan); outline-offset: 3px; }
+
+/* targeting-reticle corner brackets, appear on hover/open */
+.lab-tile::before, .lab-tile::after {
+  content: '';
+  position: absolute;
+  width: 14px; height: 14px;
+  border: 2px solid var(--impulse-cyan);
+  opacity: 0;
+  transition: opacity 0.25s var(--ease-out);
+}
+.lab-tile::before { top: 8px; left: 8px; border-right: none; border-bottom: none; }
+.lab-tile::after { bottom: 8px; right: 8px; border-left: none; border-top: none; }
+.lab-tile:hover::before, .lab-tile:hover::after,
+.lab-tile.is-open::before, .lab-tile.is-open::after { opacity: 0.8; }
+
+.lab-tile .tile-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 6px; }
+.lab-tile h3 { font-size: 1.08rem; margin-bottom: 8px; }
+.lab-tile .tile-desc { margin-bottom: 0; font-size: 0.92rem; }
+.lab-tile .tile-hint {
+  margin-top: 12px;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--ink-faint);
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.lab-tile .tile-hint svg { transition: transform 0.25s var(--ease-out); }
+.lab-tile.is-open .tile-hint svg { transform: rotate(180deg); }
+
+.lab-tile .tile-reveal {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  margin-top: 0;
+  transition: max-height 0.35s var(--ease-out), opacity 0.3s var(--ease-out), margin-top 0.35s var(--ease-out);
+  position: relative;
+}
+.lab-tile.is-open .tile-reveal { max-height: 140px; opacity: 1; margin-top: 14px; }
+
+.lab-tile .scan-line {
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--impulse-cyan), transparent);
+  opacity: 0;
+}
+.lab-tile.is-open .scan-line {
+  animation: scan-sweep 0.6s var(--ease-out);
+}
+@keyframes scan-sweep {
+  0% { opacity: 0.9; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(70px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lab-tile .scan-line { animation: none !important; }
+}
+
 /* ---------- Stats strip ---------- */
 .stats {
   display: grid;
