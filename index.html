@@ -30,8 +30,8 @@
   <div class="insignia">
     <svg width="54" height="54" viewBox="0 0 24 24" fill="none"><path d="M12 2 3 20h18L12 2Z" stroke="#0B3D91" stroke-width="1.4" stroke-linejoin="round"/><path d="M12 9v7" stroke="#E8A33D" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="6.4" r="1.1" fill="#1FA9BE"/></svg>
   </div>
-  <p class="tagline">Status report from the bridge</p>
-  <h1>Two people, run like a nation-state.</h1>
+  <h1>A Living Chronicle of the Future We Chose to Build.</h1>
+  <p class="tagline" style="margin-top:14px;letter-spacing:0.08em;text-transform:uppercase;font-size:0.82rem;">Directives • Projects • Summits • Liberation • Achievements • Archives</p>
   <p class="lede">Every Summit, every Liberation Day, every project that followed — logged, archived, and carried forward at warp.</p>
 </header>
 
@@ -40,7 +40,7 @@
     <div class="container">
       <div class="section-head reveal">
         <div>
-          <p class="panel-eyebrow">Current cycle</p>
+          <p class="panel-eyebrow">Current cycle · click a tile for its mission brief</p>
           <h2>Active projects</h2>
         </div>
       </div>
@@ -93,7 +93,8 @@
 function pageInit() {
   // Active projects
   const grid = document.getElementById("active-projects-grid");
-  grid.innerHTML = getActiveProjects().map(projectCardHtml).join("");
+  grid.innerHTML = getActiveProjects().map(labTileHtml).join("");
+  mountLabTiles(grid);
 
   // Current governing summit (flagship panel)
   const summit = getCurrentSummit();
@@ -151,6 +152,8 @@ function pageInit() {
     <div class="stat"><div class="num" data-count="${years}">0</div><div class="label">Years running</div></div>
   `;
   initCounters();
+  initReveal();
+  mountVideoEmbeds();
 }
 </script>
 <script src="js/main.js"></script>
